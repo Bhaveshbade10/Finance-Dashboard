@@ -208,6 +208,10 @@ export function TransactionsPanel() {
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)]">
           <table className="w-full min-w-[640px] text-left text-sm">
+            <caption className="sr-only">
+              Transactions: date, description, category, type, and amount
+              {isAdmin ? '; includes actions for edit and delete' : ''}.
+            </caption>
             <thead className="border-b border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-ink-muted)]">
               <tr>
                 <th className="px-4 py-3 font-medium">Date</th>

@@ -20,9 +20,15 @@ npm run dev
 Then open the URL Vite prints (typically `http://localhost:5173`).
 
 ```bash
-npm run build   # production bundle
+npm run build   # production bundle (also writes dist/404.html for GitHub Pages)
 npm run preview # serve ./dist locally
 ```
+
+### Deploying
+
+- **Static host (Netlify, etc.):** `public/_redirects` sends all routes to `index.html` so `/dashboard` works after refresh.
+- **GitHub Pages:** After `npm run build`, upload the `dist` folder. The `postbuild` step copies `index.html` to `404.html` so deep links fall back to the app.
+- **Custom base path:** In `vite.config.ts`, set `base` to e.g. `'/Finance-Dashboard/'` (trailing slash). `App.tsx` reads `import.meta.env.BASE_URL` so client routes stay aligned.
 
 ## What it does
 

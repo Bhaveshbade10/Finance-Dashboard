@@ -1,22 +1,33 @@
 import type { Transaction } from '../types'
 
-function isTransaction(x: unknown): x is Transaction {
-  if (!x || typeof x !== 'object') return false
-  const o = x as Record<string, unknown>
+function normalizeAmount(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string') {
+    const n = parseFloat(value)
+    if (Number.isFinite(n)) return n
+  }
+  return null
+}
+
+function parseOne(item: unknown): Transaction | null {
+  if (!item || typeof item !== 'object') return null
+  const o = item as Record<string, unknown>
+  const amount = normalizeAmount(o.amount)
+  if (amount == null || amount <= 0) return null
   const type = o.type
-  const amount = o.amount
-  return (
-    typeof o.id === 'string' &&
-    o.id.length > 0 &&
-    typeof o.date === 'string' &&
-    o.date.length > 0 &&
-    typeof amount === 'number' &&
-    Number.isFinite(amount) &&
-    typeof o.category === 'string' &&
-    o.category.trim().length > 0 &&
-    (type === 'income' || type === 'expense') &&
-    typeof o.description === 'string'
-  )
+  if (type !== 'income' && type !== 'expense') return null
+  if (typeof o.id !== 'string' || !o.id) return null
+  if (typeof o.date !== 'string' || !o.date) return null
+  if (typeof o.category !== 'string' || !o.category.trim()) return null
+  if (typeof o.description !== 'string') return null
+  return {
+    id: o.id,
+    date: o.date,
+    amount,
+    category: o.category.trim(),
+    type,
+    description: o.description,
+  }
 }
 
 /**
@@ -26,7 +37,8 @@ export function parseStoredTransactions(raw: unknown): Transaction[] | null {
   if (!Array.isArray(raw)) return null
   const out: Transaction[] = []
   for (const item of raw) {
-    if (isTransaction(item)) out.push({ ...item })
+    const row = parseOne(item)
+    if (row) out.push(row)
   }
   return out
 }
