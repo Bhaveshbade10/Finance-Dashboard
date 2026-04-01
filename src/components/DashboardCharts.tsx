@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useId, useMemo } from 'react'
 import {
   Area,
   AreaChart,
@@ -15,7 +15,7 @@ import { useFinance } from '../context/useFinance'
 import { balanceTrend, spendingByCategory } from '../utils/insights'
 import { formatCurrency } from '../utils/format'
 
-const PIE_COLORS = [
+const CATEGORY_COLORS = [
   '#0d9488',
   '#6366f1',
   '#f59e0b',
@@ -49,14 +49,18 @@ function ChartTooltip({
   )
 }
 
+const CHART_HEIGHT = 256
+
 export function DashboardCharts() {
+  const gradId = useId().replace(/:/g, '')
   const { transactions, theme } = useFinance()
   const trend = useMemo(() => balanceTrend(transactions), [transactions])
   const byCat = useMemo(() => spendingByCategory(transactions), [transactions])
 
   const axisColor = theme === 'dark' ? '#94a3b8' : '#64748b'
   const gridColor = theme === 'dark' ? '#334155' : '#e2e8f0'
-  const lineColor = 'var(--color-accent)'
+  const accentStroke = theme === 'dark' ? '#2dd4bf' : '#0d9488'
+  const accentFillOpacity = theme === 'dark' ? 0.25 : 0.35
 
   const emptyTrend = trend.length === 0
   const emptyCat = byCat.length === 0
@@ -69,8 +73,8 @@ export function DashboardCharts() {
       >
         Trends & breakdown
       </h2>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4 sm:p-6">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-2">
+        <div className="min-w-0 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4 sm:p-6">
           <h3 className="mb-1 text-sm font-medium text-[var(--color-ink)]">
             Balance trend
           </h3>
@@ -82,16 +86,32 @@ export function DashboardCharts() {
               Add transactions to see your balance over time.
             </p>
           ) : (
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
+            <div
+              className="w-full min-w-0"
+              style={{ height: CHART_HEIGHT }}
+            >
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+                minWidth={0}
+                minHeight={CHART_HEIGHT}
+              >
                 <AreaChart
                   data={trend}
                   margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
                 >
                   <defs>
-                    <linearGradient id="balFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#0d9488" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="#0d9488" stopOpacity={0} />
+                    <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="0%"
+                        stopColor={accentStroke}
+                        stopOpacity={accentFillOpacity}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor={accentStroke}
+                        stopOpacity={0}
+                      />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -112,8 +132,8 @@ export function DashboardCharts() {
                     type="monotone"
                     dataKey="balance"
                     name="Balance"
-                    stroke={lineColor}
-                    fill="url(#balFill)"
+                    stroke={accentStroke}
+                    fill={`url(#${gradId})`}
                     strokeWidth={2}
                   />
                 </AreaChart>
@@ -122,7 +142,7 @@ export function DashboardCharts() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4 sm:p-6">
+        <div className="min-w-0 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4 sm:p-6">
           <h3 className="mb-1 text-sm font-medium text-[var(--color-ink)]">
             Spending by category
           </h3>
@@ -134,12 +154,20 @@ export function DashboardCharts() {
               No expense data yet. Record an expense to see a breakdown.
             </p>
           ) : (
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
+            <div
+              className="w-full min-w-0"
+              style={{ height: CHART_HEIGHT }}
+            >
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+                minWidth={0}
+                minHeight={CHART_HEIGHT}
+              >
                 <BarChart
                   data={byCat}
                   layout="vertical"
-                  margin={{ top: 8, right: 16, left: 8, bottom: 0 }}
+                  margin={{ top: 8, right: 16, left: 4, bottom: 0 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                   <XAxis
@@ -150,7 +178,7 @@ export function DashboardCharts() {
                   <YAxis
                     type="category"
                     dataKey="category"
-                    width={100}
+                    width={104}
                     tick={{ fill: axisColor, fontSize: 11 }}
                     axisLine={{ stroke: gridColor }}
                   />
@@ -177,7 +205,7 @@ export function DashboardCharts() {
                     {byCat.map((_, i) => (
                       <Cell
                         key={i}
-                        fill={PIE_COLORS[i % PIE_COLORS.length]}
+                        fill={CATEGORY_COLORS[i % CATEGORY_COLORS.length]}
                       />
                     ))}
                   </Bar>

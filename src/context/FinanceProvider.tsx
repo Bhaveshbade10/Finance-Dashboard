@@ -7,6 +7,7 @@ import {
 } from 'react'
 import { MOCK_TRANSACTIONS } from '../data/mockTransactions'
 import type { Role, Transaction, TransactionFilters } from '../types'
+import { parseStoredTransactions } from '../utils/parseStoredTransactions'
 import { filterAndSortTransactions } from '../utils/transactions'
 import {
   FinanceContext,
@@ -20,14 +21,14 @@ const STORAGE_ROLE = 'zorvyn-finance-role'
 function loadTransactions(): Transaction[] {
   try {
     const raw = localStorage.getItem(STORAGE_TX)
-    if (raw) {
-      const parsed = JSON.parse(raw) as unknown
-      if (Array.isArray(parsed)) return parsed as Transaction[]
-    }
+    if (raw == null) return [...MOCK_TRANSACTIONS]
+    const parsed = JSON.parse(raw) as unknown
+    const txs = parseStoredTransactions(parsed)
+    if (txs === null) return [...MOCK_TRANSACTIONS]
+    return txs
   } catch {
-    /* ignore */
+    return [...MOCK_TRANSACTIONS]
   }
-  return [...MOCK_TRANSACTIONS]
 }
 
 const defaultFilters: TransactionFilters = {

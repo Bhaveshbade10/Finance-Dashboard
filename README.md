@@ -42,13 +42,31 @@ npm run preview # serve the build locally
 - `src/context/` — global state (`FinanceProvider`, `financeContext`, `useFinance`)
 - `src/data/` — seed mock transactions
 - `src/components/` — layout, charts, transactions, insights, modal form
-- `src/utils/` — formatting, filtering/sorting, insight calculations
+- `src/utils/` — formatting, filtering/sorting, insights, **stored JSON validation**
 
 ## Assumptions
 
 - Currency is **USD** for display only.
 - Dates are stored as `YYYY-MM-DD` strings.
 - “Total balance” is **all-time** income minus expenses over the loaded dataset.
+
+## Reliability & polish
+
+- **localStorage** payloads are **validated** on load; corrupt or non-array JSON falls back to mock data. Invalid rows inside an array are dropped.
+- **Charts** use fixed height, `min-w-0` in the grid, and `ResponsiveContainer` `minWidth` / `minHeight` to avoid layout warnings and zero-size measure issues.
+- **Charts code** is **lazy-loaded** so the first paint stays lighter; a short skeleton shows while the chunk loads.
+- **Transaction modal**: Escape closes, backdrop click closes, body scroll locked while open, first field focused, amounts must be **greater than zero**.
+
+## Reset demo data
+
+In the browser devtools console, run:
+
+```js
+localStorage.removeItem('zorvyn-finance-transactions')
+location.reload()
+```
+
+Or clear site data for the origin. Other keys: `zorvyn-finance-theme`, `zorvyn-finance-role`.
 
 ## License
 

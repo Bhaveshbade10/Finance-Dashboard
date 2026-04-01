@@ -1,4 +1,9 @@
-import { useState, type FormEvent } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from 'react'
 import type { Transaction, TransactionType } from '../types'
 
 function formFromInitial(initial: Transaction | null) {
@@ -34,6 +39,12 @@ function TransactionFormFields({
   onSave,
 }: FieldsProps) {
   const [form, setForm] = useState(() => formFromInitial(initial))
+  const dateInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const t = window.setTimeout(() => dateInputRef.current?.focus(), 0)
+    return () => window.clearTimeout(t)
+  }, [])
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -41,7 +52,8 @@ function TransactionFormFields({
     if (
       !form.category.trim() ||
       !form.description.trim() ||
-      Number.isNaN(amount)
+      Number.isNaN(amount) ||
+      amount <= 0
     ) {
       return
     }
@@ -70,6 +82,7 @@ function TransactionFormFields({
         <label className="block text-sm">
           <span className="text-[var(--color-ink-muted)]">Date</span>
           <input
+            ref={dateInputRef}
             type="date"
             required
             value={form.date}
@@ -82,7 +95,7 @@ function TransactionFormFields({
           <input
             type="number"
             step="0.01"
-            min="0"
+            min="0.01"
             required
             value={form.amount}
             onChange={(e) =>
@@ -171,6 +184,20 @@ export function TransactionFormModal({
   title,
   resetKey,
 }: Props) {
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [open, onClose])
+
   if (!open) return null
 
   return (
