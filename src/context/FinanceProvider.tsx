@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { MOCK_TRANSACTIONS } from '../data/mockTransactions'
+import { SAMPLE_TRANSACTIONS } from '../data/sampleTransactions'
 import type { Role, Transaction, TransactionFilters } from '../types'
 import { parseStoredTransactions } from '../utils/parseStoredTransactions'
 import { filterAndSortTransactions } from '../utils/transactions'
@@ -14,20 +14,20 @@ import {
   type FinanceContextValue,
 } from './financeContext'
 
-const STORAGE_TX = 'zorvyn-finance-transactions'
-const STORAGE_THEME = 'zorvyn-finance-theme'
-const STORAGE_ROLE = 'zorvyn-finance-role'
+const STORAGE_TX = 'pf-ui-v1-transactions'
+const STORAGE_THEME = 'pf-ui-v1-theme'
+const STORAGE_ROLE = 'pf-ui-v1-role'
 
 function loadTransactions(): Transaction[] {
   try {
     const raw = localStorage.getItem(STORAGE_TX)
-    if (raw == null) return [...MOCK_TRANSACTIONS]
+    if (raw == null) return [...SAMPLE_TRANSACTIONS]
     const parsed = JSON.parse(raw) as unknown
     const txs = parseStoredTransactions(parsed)
-    if (txs === null) return [...MOCK_TRANSACTIONS]
+    if (txs === null) return [...SAMPLE_TRANSACTIONS]
     return txs
   } catch {
-    return [...MOCK_TRANSACTIONS]
+    return [...SAMPLE_TRANSACTIONS]
   }
 }
 

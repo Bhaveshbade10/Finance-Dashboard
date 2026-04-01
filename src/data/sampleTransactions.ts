@@ -1,7 +1,7 @@
 import type { Transaction } from '../types'
 
-/** Deterministic mock data for charts and demos */
-export const MOCK_TRANSACTIONS: Transaction[] = [
+/** Bundled sample rows used when nothing valid is stored locally */
+export const SAMPLE_TRANSACTIONS: Transaction[] = [
   {
     id: '1',
     date: '2026-01-05',

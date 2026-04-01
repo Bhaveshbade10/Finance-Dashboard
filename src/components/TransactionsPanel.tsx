@@ -94,8 +94,8 @@ export function TransactionsPanel() {
       {!isAdmin && (
         <p className="mb-4 rounded-lg border border-dashed border-[var(--color-border)] bg-[var(--color-accent-soft)]/30 px-4 py-3 text-sm text-[var(--color-ink-muted)]">
           You are viewing as <strong className="text-[var(--color-ink)]">Viewer</strong>
-          . Switch role to <strong>Admin</strong> in the header to add, edit, or
-          delete transactions and export data.
+          . Choose <strong>Admin</strong> in the header to add, change, or remove
+          rows and to export files.
         </p>
       )}
 
@@ -182,7 +182,7 @@ export function TransactionsPanel() {
           <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
             {isAdmin
               ? 'Add your first transaction to populate the dashboard.'
-              : 'There is no data to display. Ask an admin to add transactions, or switch to Admin role if you are testing the demo.'}
+              : 'Nothing to show yet. Someone with the Admin role can add transactions, or you can switch to Admin if you are allowed to edit.'}
           </p>
         </div>
       ) : noMatches ? (

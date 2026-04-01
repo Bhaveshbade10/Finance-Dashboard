@@ -1,10 +1,15 @@
-# Finance Dashboard
+# Personal finance dashboard
 
-A small, interactive finance dashboard built for a frontend assessment. It uses **React 19**, **TypeScript**, **Vite**, **Tailwind CSS v4**, and **Recharts** for visualizations. Data is **mocked** and optionally **persisted in `localStorage`** (transactions, theme, and demo role).
+A responsive single-page app for exploring income, expenses, and category trends. Built with **React 19**, **TypeScript**, **Vite**, **React Router**, **Tailwind CSS v4**, and **Recharts**. Sample transactions ship with the repo; you can edit them in the UI and persist changes in **`localStorage`**.
 
-## Setup
+**Routes:** `/` — landing page. `/dashboard` — full workspace (figures, charts, table, insights).
 
-Requirements: **Node.js 18+** and npm.
+## Prerequisites
+
+- **Node.js 18+**
+- npm
+
+## Commands
 
 ```bash
 cd finance-dashboard
@@ -12,62 +17,49 @@ npm install
 npm run dev
 ```
 
-Open the URL shown in the terminal (usually `http://localhost:5173`).
+Then open the URL Vite prints (typically `http://localhost:5173`).
 
 ```bash
-npm run build   # production build
-npm run preview # serve the build locally
+npm run build   # production bundle
+npm run preview # serve ./dist locally
 ```
 
-## Features (assignment mapping)
+## What it does
 
-| Requirement | Implementation |
-|-------------|----------------|
-| **Dashboard overview** | Summary cards: total balance, income, expenses. **Balance trend** (area chart by month). **Spending by category** (horizontal bar chart for expenses). |
-| **Transactions** | Table with date, description, category, type (income/expense), amount. **Search**, category & type **filters**, **sort** by date/amount/category with asc/desc toggle. |
-| **Role-based UI** | Header **role dropdown**: **Viewer** (read-only, no add/edit/delete/export) vs **Admin** (full CRUD + CSV/JSON export). No backend; role is stored locally for the demo. |
-| **Insights** | Cards for **highest spending category**, **month-over-month spending** comparison, and a short **balance trajectory** observation. |
-| **State** | `FinanceProvider` + React **Context** for transactions, filters, role, and theme; derived lists via `useMemo`. |
-| **UX** | Responsive layout, empty states (no data / no filter matches), dark mode toggle, accessible table and dialog labels. |
+- **Figures:** running balance, total income, total expenses (from the loaded dataset).
+- **Charts:** balance by month (area), expenses by category (horizontal bars).
+- **Transactions:** searchable, filterable, sortable table; income vs expense styling.
+- **Roles:** choose **Viewer** (read-only) or **Admin** (create, update, delete, export). Enforced in the UI only; there is no server.
+- **Insights:** simple text summaries (e.g. top category, recent month comparison).
+- **Theme:** light / dark toggle, remembered per origin.
 
-## Optional enhancements included
+## Layout
 
-- **Dark mode** (toggle + persistence)
-- **localStorage** for transactions, theme, and role
-- **Export** CSV and JSON (admin only)
-- Light **transitions** on cards and table rows
+- `src/context/` — React context for transactions, filters, role, theme
+- `src/pages/` — home and dashboard routes
+- `src/components/` — navigation, charts, table, forms, panels
+- `src/data/` — `sampleTransactions.ts` (starting list)
+- `src/utils/` — formatting, filters, chart inputs, safe parsing of stored JSON
 
-## Project structure
+## Notes
 
-- `src/context/` — global state (`FinanceProvider`, `financeContext`, `useFinance`)
-- `src/data/` — seed mock transactions
-- `src/components/` — layout, charts, transactions, insights, modal form
-- `src/utils/` — formatting, filtering/sorting, insights, **stored JSON validation**
+- Amounts are shown in **USD** for display.
+- Dates are stored as **`YYYY-MM-DD`** strings.
+- **Balance** here means cumulative income minus expenses over all loaded rows.
 
-## Assumptions
+## Stored data
 
-- Currency is **USD** for display only.
-- Dates are stored as `YYYY-MM-DD` strings.
-- “Total balance” is **all-time** income minus expenses over the loaded dataset.
+Keys used in `localStorage`: `pf-ui-v1-transactions`, `pf-ui-v1-theme`, `pf-ui-v1-role`.
 
-## Reliability & polish
-
-- **localStorage** payloads are **validated** on load; corrupt or non-array JSON falls back to mock data. Invalid rows inside an array are dropped.
-- **Charts** use fixed height, `min-w-0` in the grid, and `ResponsiveContainer` `minWidth` / `minHeight` to avoid layout warnings and zero-size measure issues.
-- **Charts code** is **lazy-loaded** so the first paint stays lighter; a short skeleton shows while the chunk loads.
-- **Transaction modal**: Escape closes, backdrop click closes, body scroll locked while open, first field focused, amounts must be **greater than zero**.
-
-## Reset demo data
-
-In the browser devtools console, run:
+To wipe saved transactions and reload sample data from the bundle:
 
 ```js
-localStorage.removeItem('zorvyn-finance-transactions')
+localStorage.removeItem('pf-ui-v1-transactions')
 location.reload()
 ```
 
-Or clear site data for the origin. Other keys: `zorvyn-finance-theme`, `zorvyn-finance-role`.
+Invalid stored JSON falls back to the bundled sample list.
 
 ## License
 
-Submitted as evaluation work; use only as permitted by the assessor.
+MIT
